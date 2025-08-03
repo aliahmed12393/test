@@ -1,0 +1,1026 @@
+/* css/style.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Updated colors based on the logo */
+    --primary-color: #2E8B9B;   /* Teal from logo */
+    --secondary-color: #1F6674; /* Darker Teal from logo for depth/gradients */
+    --accent-color: #5BC0DE;    /* Light Cyan/Teal from logo for highlights */
+    --dark-color: #333A3C;      /* Dark Gray from logo (slightly bluish) */
+    --text-dark: #282D2E;       /* Very Dark Gray for primary text */
+    --text-light: #6B7280;      /* Lighter gray for secondary text (kept from original) */
+    --background-light: #F0F4F5;/* Very light, slightly cool gray background */
+    --white: #ffffff;
+
+    /* Updated shadow colors based on the new primary-color */
+    /* New primary #2E8B9B is RGB(46, 139, 155) */
+    --shadow: 0 10px 30px rgba(46, 139, 155, 0.1);
+    --shadow-hover: 0 20px 40px rgba(46, 139, 155, 0.15);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    /* The background gradient will now use the new primary and secondary colors */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-dark);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95); /* Kept light for readability */
+    backdrop-filter: blur(15px); /* Frosted glass effect */
+    z-index: 1000;
+    transition: all 0.4s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: var(--shadow); /* Uses updated shadow color */
+    padding: 0.2rem 0;
+}
+
+.nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-dark); /* Uses updated text color */
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logo-link:hover {
+    color: var(--primary-color); /* Uses updated primary color */
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark); /* Uses updated text color */
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0; /* Default for LTR, will be adjusted by RTL rules if present */
+    width: 0;
+    height: 2px;
+    background: var(--primary-color); /* Uses updated primary color */
+    transition: width 0.3s ease, left 0.3s ease, right 0.3s ease;
+}
+
+html[dir="rtl"] .nav-links a::after {
+    right: 0;
+    left: auto;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color); /* Uses updated primary color */
+}
+
+/* Mobile Menu */
+.mobile-menu {
+    display: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-dark); /* Uses updated text color */
+}
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    /* Background is already set on body, hero will overlay this */
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Consider if this grain effect still fits the new color scheme or if it needs adjustment */
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-content {
+    max-width: 900px;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-logo-img {
+    height: 60px; /* This is for your textual logo, not the image you provided */
+    transition: transform 0.4s ease-out;
+}
+
+.hero-logo-img:hover {
+    transform: scale(1.1);
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    color: white; /* Text on gradient background, white is good */
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    animation: heroTitle 1.2s ease-out;
+}
+
+.hero .subtitle {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.95); /* Text on gradient background */
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+    animation: heroSubtitle 1.2s ease-out 0.3s both;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: heroButtons 1.2s ease-out 0.6s both;
+}
+
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.2rem 2.5rem;
+    /* CTA button uses accent and primary colors */
+    background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.4s ease;
+    /* Shadow for CTA button, using accent color's RGB: (91, 192, 222) */
+    box-shadow: 0 8px 25px rgba(91, 192, 222, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.cta-button:hover {
+    transform: translateY(-5px);
+    /* Shadow for CTA button hover, using accent color's RGB */
+    box-shadow: 0 15px 35px rgba(91, 192, 222, 0.4);
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+}
+
+.cta-button.secondary {
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white on gradient */
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Floating Elements for Hero */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.floating-element {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.15;
+    animation: float 8s ease-in-out infinite;
+    color: white; /* Floating elements on gradient background */
+}
+
+.floating-element:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+.floating-element:nth-child(2) { top: 25%; right: 15%; animation-delay: 2s; }
+.floating-element:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 4s; }
+.floating-element:nth-child(4) { top: 60%; right: 25%; animation-delay: 6s; }
+.floating-element:nth-child(5) { bottom: 15%; right: 10%; animation-delay: 1s; }
+
+/* Reveal Animation Classes */
+.reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.25, 0.25, 0.25, 1);
+}
+
+.reveal.animate { opacity: 1; transform: translateY(0); }
+.reveal { transform: translateY(50px); }
+
+.reveal-left.animate { opacity: 1; transform: translateX(0); }
+.reveal-left { transform: translateX(-50px); }
+
+.reveal-right.animate { opacity: 1; transform: translateX(0); }
+.reveal-right { transform: translateX(50px); }
+
+.reveal-scale.animate { opacity: 1; transform: scale(1); }
+.reveal-scale { transform: scale(0.8); }
+
+/* Services Section */
+.services {
+    padding: 6rem 0;
+    background: var(--white); /* Uses updated white (which is still #ffffff but good practice) */
+    position: relative;
+}
+
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    /* Gradient from secondary color to transparent */
+    background: linear-gradient(to bottom, var(--secondary-color), transparent);
+    opacity: 0.1; /* Softer transition from hero */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-dark); /* Uses updated text color */
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    /* Underline uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-light); /* Uses updated text color */
+    margin-bottom: 4rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin-top: 4rem;
+}
+
+.service-card {
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow); /* Uses updated shadow color */
+    transition: all 0.4s ease;
+    border: 1px solid #e2e8f0; /* Light border, can be var(--background-light) if defined as a border color */
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    /* Top border accent uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+.service-card:hover {
+    transform: translateY(-15px);
+    box-shadow: var(--shadow-hover); /* Uses updated shadow color */
+}
+
+.service-icon {
+    width: 70px;
+    height: 70px;
+    /* Icon background uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    color: white; /* Icon color on gradient background */
+    transition: all 0.3s ease;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.service-card h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-dark); /* Uses updated text color */
+    margin-bottom: 1rem;
+}
+
+.service-card p {
+    color: var(--text-light); /* Uses updated text color */
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+/* Stats Section */
+.stats {
+    /* Stats section uses primary and secondary color gradient */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white; /* Text on gradient background */
+    padding: 1rem 0; /* Added padding for better spacing */
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 1.5rem;
+}
+
+.stat-number {
+    font-size: 1.5rem; /* Made numbers larger */
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Team Section */
+.team {
+    padding: 6rem 0;
+    /* Team section uses light background */
+    background: linear-gradient(135deg, var(--background-light) 0%, #edf2f7 100%); /* #edf2f7 is a light gray */
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    margin-top: 4rem;
+}
+
+.team-member {
+    background: var(--white);
+    padding: 3rem 2rem;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: var(--shadow); /* Uses updated shadow color */
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-member::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    /* Shimmer effect uses primary color with low opacity */
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(46, 139, 155, 0.1), /* Corresponds to new --primary-color */
+        transparent
+    );
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+    opacity: 0;
+}
+
+.team-member:hover::before {
+    opacity: 1;
+    animation: shimmer 1.5s ease-in-out;
+}
+
+.team-member:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover); /* Uses updated shadow color */
+}
+
+.team-avatar {
+    width: 120px;
+    height: 120px;
+    /* Avatar background uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white; /* Text/initials on avatar */
+    font-weight: 700;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.team-member:hover .team-avatar {
+    transform: scale(1.1);
+}
+
+.team-member h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-dark); /* Uses updated text color */
+    margin-bottom: 0.5rem;
+}
+
+.team-member .role {
+    color: var(--primary-color); /* Role text uses primary color */
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.team-member p {
+    color: var(--text-light); /* Uses updated text color */
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Contact Section */
+.contact {
+    padding: 6rem 0;
+    /* Contact section uses primary and secondary color gradient */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white; /* Text on gradient background */
+    position: relative;
+}
+
+.contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Dots pattern on contact background */
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+}
+
+.contact-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.contact h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: white; /* Title on gradient background */
+}
+
+.contact .section-subtitle {
+    color: rgba(255, 255, 255, 0.9); /* Subtitle on gradient background */
+    margin-bottom: 3rem;
+}
+
+.contact-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2.5rem;
+    margin-top: 4rem;
+    color: inherit; /* Inherits white from .contact */
+}
+
+.contact-info > a, .contact-info > a:visited {
+    text-decoration: none;
+    color: white; /* Links within contact info */
+}
+
+.contact-item {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent cards on gradient */
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    color: white; /* Text within contact items */
+}
+
+.contact-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+
+.contact-item i {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    display: block;
+    color: rgba(255, 255, 255, 0.9); /* Icon color */
+}
+
+.contact-item h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: white; /* Title within contact items */
+}
+
+.contact-item p, .contact-item p a {
+    font-size: 1rem;
+    opacity: 0.9;
+    color: white !important; /* Ensure paragraph and link text is white */
+    text-decoration: none;
+}
+.contact-item p a:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+.footer {
+    background: var(--dark-color); /* Footer uses the new dark color */
+    color: white; /* Text in footer */
+    text-align: center;
+    padding: 0.5rem 0; /* Increased padding */
+    position: relative;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer p {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+.footer p:last-child {
+    margin-bottom: 0;
+}
+
+.footer a {
+    color: var(--accent-color); /* Footer links use accent color */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--white); /* Hover color for footer links */
+    text-decoration: underline;
+}
+
+/* Animations */
+@keyframes heroTitle {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroSubtitle {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroButtons {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(5deg); }
+    50% { transform: translateY(-10px) rotate(-5deg); }
+    75% { transform: translateY(-30px) rotate(3deg); }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero-logo-img { height: 60px; }
+    .hero .subtitle { font-size: 1.1rem; }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--white);
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-top: 1px solid #eee;
+    }
+    .nav-links.active { display: flex; }
+    .nav-links li { margin: 0.5rem 0; }
+    .mobile-menu { display: block; }
+
+    .services-grid, .team-grid, .about-grid, .contact-info {
+        grid-template-columns: 1fr;
+    }
+    .section-title { font-size: 2.2rem; }
+    .contact h2 { font-size: 2.2rem; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+    .service-card, .team-member, .about-card { margin: 0 1rem; } /* Ensure cards don't touch edges */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .hero h1 { font-size: 2rem; }
+    .hero-logo-img { height: 50px; }
+    .logo-link { font-size: 1.1rem; }
+    .container { padding: 0 1rem; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .managers-info { grid-template-columns: 1fr; }
+}
+
+/* Loading Animation */
+.loading {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* Scroll Progress Bar */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    /* Progress bar uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    z-index: 9999;
+    transition: width 0.1s ease;
+}
+
+/* About Us Section */
+.about-us {
+    padding: 6rem 0;
+    /* About Us section uses light background */
+    background: linear-gradient(135deg, var(--background-light) 0%, #edf2f7 100%);
+    position: relative;
+}
+
+.about-us::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    /* Gradient from secondary color */
+    background: linear-gradient(to bottom, var(--secondary-color), transparent);
+    opacity: 0.05; /* Very subtle */
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin-top: 4rem;
+}
+
+.about-card {
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow); /* Uses updated shadow color */
+    transition: all 0.4s ease;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.about-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    /* Top border accent uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+}
+
+.about-card:hover {
+    transform: translateY(-15px);
+    box-shadow: var(--shadow-hover); /* Uses updated shadow color */
+}
+
+.about-icon {
+    width: 70px;
+    height: 70px;
+    /* Icon background uses primary and secondary colors */
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.8rem;
+    color: white; /* Icon color */
+    transition: all 0.3s ease;
+}
+
+.about-card:hover .about-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.about-card h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-dark); /* Uses updated text color */
+    margin-bottom: 1rem;
+}
+
+.about-card p {
+    color: var(--text-light); /* Uses updated text color */
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.year-end-message {
+    margin-top: 4rem;
+    /* Message box uses primary and secondary color gradient */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 20px;
+    padding: 3rem;
+    color: white; /* Text on gradient background */
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.year-end-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Dots pattern for message box */
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots-year-end" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23dots-year-end)"/></svg>');
+}
+
+.message-content {
+    position: relative;
+    z-index: 2;
+}
+
+.year-end-message h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.year-end-message p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    opacity: 0.95;
+}
+
+.partnership-info {
+    margin-top: 4rem;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: var(--shadow); /* Uses updated shadow color */
+    border: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.partnership-content h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-dark); /* Uses updated text color */
+    margin-bottom: 1rem;
+}
+
+.partnership-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-color); /* Uses primary color */
+    margin-bottom: 0.5rem;
+}
+
+.partnership-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-light); /* Uses updated text color */
+    margin-bottom: 1.5rem;
+}
+
+.website-link {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.website-link a {
+    color: var(--accent-color); /* Website link uses accent color */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    font-size: 1.5rem;
+}
+
+.website-link a:hover {
+    color: var(--primary-color); /* Hover uses primary color */
+}
+
+.website-link a i {
+    transition: transform 0.3s ease;
+}
+.website-link a:hover i {
+    transform: scale(1.1);
+}
+
+.managers-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.manager-item {
+    /* Manager item uses light background */
+    background: linear-gradient(135deg, var(--background-light) 0%, #f8fafc 100%); /* f8fafc is very light gray */
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.manager-item:hover {
+    transform: translateY(-5px);
+    /* Shadow on hover uses primary color with low opacity */
+    box-shadow: 0 10px 25px rgba(46, 139, 155, 0.1); /* Corresponds to new --primary-color */
+}
+
+.manager-details h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark); /* Uses updated text color */
+    margin-bottom: 0.5rem;
+}
+
+.manager-role {
+    color: var(--primary-color); /* Role uses primary color */
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.manager-phone {
+    color: var(--text-light); /* Uses updated text color */
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.manager-phone i {
+    color: var(--accent-color); /* Phone icon uses accent color */
+}
+
+.nav-links .lang-switcher a {
+    padding: 0.2rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-links .lang-switcher a:hover {
+    color: var(--primary-color); /* Uses primary color */
+    /* Background on hover uses primary color with low opacity */
+    background-color: rgba(46, 139, 155, 0.1); /* Corresponds to new --primary-color */
+    border-color: var(--primary-color); /* Border uses primary color */
+}
+
+.nav-links .lang-switcher a i {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-links .lang-switcher a:hover i {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.nav-links .lang-switcher a::after {
+    display: none !important;
+}
+
+/* Ensure English text uses an appropriate font if Cairo is too dominant */
+html[lang="en"] body,
+html[lang="en"] h1,
+html[lang="en"] h2,
+html[lang="en"] h3,
+html[lang="en"] p,
+html[lang="en"] a,
+html[lang="en"] span,
+html[lang="en"] li,
+html[lang="en"] div {
+    font-family: 'Roboto', 'Cairo', sans-serif; /* Roboto first for English */
+}
+
+html[lang="en"] .logo-link {
+    font-family: 'Roboto', 'Cairo', sans-serif;
+}

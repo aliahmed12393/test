@@ -1,4 +1,3 @@
-// js/script.js
 document.addEventListener('DOMContentLoaded', function() {
     // Add loading class to body for potential fade-in effect
     document.body.classList.add('loading');
@@ -95,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.transitionDelay = `${index * delayIncrement}s`;
         });
     }
-    staggerAnimation('.service-card', 0.1);
+    staggerAnimation('.service-accordion-item', 0.1); // Updated for new accordion items
     staggerAnimation('.team-member', 0.15);
     staggerAnimation('.contact-item', 0.1);
     staggerAnimation('.stat-item', 0.08);
@@ -119,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
             targetY += (mouseY - targetY) * 0.05;
 
             // Example: Adjust gradient angle or position slightly
-            // This is a simple example, could be more complex
             const angleOffset = targetX * 5; // Max 5 degree shift
             const colorStopOffset1 = targetY * 5; // Max 5% shift for first color
             const colorStopOffset2 = targetY * -5; // Max 5% shift for second color
@@ -200,38 +198,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Email deobfuscation (if you had any, not present in original HTML)
-    // This part is for the example where email was `[email protected]`
-    // If your email is plain text, you don't need this.
-    // Example:
-    // document.querySelectorAll('.__cf_email__').forEach(el => {
-    //     const emailHex = el.getAttribute('data-cfemail');
-    //     if (emailHex) {
-    //         let email = "";
-    //         for (let i = 0; i < emailHex.length; i += 2) {
-    //             email += String.fromCharCode(parseInt(emailHex.substr(i, 2), 16));
-    //         }
-    //         const link = document.createElement('a');
-    //         link.href = `mailto:${email}`;
-    //         link.textContent = email;
-    //         el.parentNode.replaceChild(link, el);
-    //     }
-    // });
-    // For the direct mailto link:
+    // Email deobfuscation for mailto link
     const emailLink = document.querySelector('a.email-link');
     if (emailLink && emailLink.textContent.includes('[email protected]')) { // Basic check
-        // Assuming the email is info@asusalthiqa.com
-        const actualEmail = "info" + "@" + "asusalthiqa.com";
+        const actualEmail = "asus.thiqa" + "@" + "gmail.com"; // Updated to correct email
         emailLink.href = "mailto:" + actualEmail;
         emailLink.textContent = actualEmail;
     }
 
 
-});
+    // Interactive Service Cards in Grid Layout (Now for both sections)
+    document.querySelectorAll('.service-card, .partnership-card').forEach(card => {
+        card.addEventListener('click', (event) => {
+            // Prevent click on a link inside the card from triggering the collapse
+            if (event.target.tagName === 'A') {
+                return;
+            }
 
-staggerAnimation('.service-card', 0.1);
-    staggerAnimation('.team-member', 0.15);
-    staggerAnimation('.contact-item', 0.1);
-    staggerAnimation('.stat-item', 0.08);
-    staggerAnimation('.about-card', 0.12);
-    staggerAnimation('.manager-item', 0.1);
+            const wasActive = card.classList.contains('active');
+
+            // Close all other cards in both sections
+            document.querySelectorAll('.service-card, .partnership-card').forEach(otherCard => {
+                if (otherCard !== card) {
+                    otherCard.classList.remove('active');
+                }
+            });
+
+            // Toggle the active state of the clicked card
+            if (wasActive) {
+                card.classList.remove('active');
+            } else {
+                card.classList.add('active');
+            }
+        });
+    });
+
+});

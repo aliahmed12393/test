@@ -411,10 +411,68 @@ html[dir="rtl"] .nav-links a::after {
     margin-bottom: 1rem;
 }
 
-.service-card p {
+.card-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    padding: 0;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: inherit;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card-toggle:focus {
+    outline: none;
+}
+
+.card-toggle:focus-visible {
+    outline: 3px solid rgba(91, 192, 222, 0.6);
+    outline-offset: 4px;
+    border-radius: 12px;
+    background-color: rgba(91, 192, 222, 0.12);
+}
+
+.card-toggle::after {
+    content: '\f067';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--primary-color);
+    transition: transform 0.4s ease;
+    justify-self: end;
+}
+
+.card-toggle-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.service-card .card-toggle {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
     color: var(--text-light); /* Uses updated text color */
     line-height: 1.7;
     font-size: 1rem;
+    text-align: center;
+    justify-items: center;
+}
+
+.service-card .card-toggle-text {
+    justify-content: center;
+    text-align: center;
+}
+
+.service-card .card-toggle:hover {
+    background-color: rgba(91, 192, 222, 0.08);
+    color: var(--text-dark);
 }
 
 /* Partnership Services Section */
@@ -442,7 +500,6 @@ html[dir="rtl"] .nav-links a::after {
     border: 1px solid #e2e8f0;
     position: relative;
     overflow: hidden;
-    cursor: pointer; /* Add pointer to indicate clickability */
 }
 /* --- END: MODIFIED SECTION --- */
 
@@ -466,20 +523,28 @@ html[dir="rtl"] .nav-links a::after {
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--text-dark);
-    margin-bottom: 0; /* Remove margin-bottom to keep it tight in collapsed state */
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    margin: 0;
 }
 
-.partnership-card.active h3 {
+.partnership-card .card-toggle {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: start;
+}
+
+.partnership-card .card-toggle:hover {
+    color: var(--primary-color);
+}
+
+.partnership-card.active .card-toggle {
     margin-bottom: 1.5rem; /* Add margin back when active */
 }
 
+.partnership-card .card-toggle-text {
+    justify-content: flex-start;
+}
 
-.partnership-card h3 i {
+.partnership-card .card-toggle-text i {
     color: var(--primary-color);
     font-size: 1.5rem;
     background: rgba(46, 139, 155, 0.1);
@@ -1220,39 +1285,7 @@ html[dir="rtl"] .service-details-content {
     box-shadow: var(--shadow-hover);
 }
 
-/* Add an expand/collapse indicator icon */
-.service-card h3, .partnership-card h3 {
-    position: relative;
-    display: block; /* Make it block to take full width for the icon */
-    width: 100%;
-    padding-right: 25px; /* Space for the icon */
-}
-html[dir="rtl"] .service-card h3,
-html[dir="rtl"] .partnership-card h3 {
-    padding-right: 0;
-    padding-left: 25px;
-}
-
-.service-card h3::after,
-.partnership-card h3::after {
-    content: '\f067'; /* FontAwesome plus icon */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%) rotate(0deg);
-    color: var(--primary-color);
-    transition: transform 0.4s ease;
-    font-size: 1rem;
-}
-html[dir="rtl"] .service-card h3::after,
-html[dir="rtl"] .partnership-card h3::after {
-    right: auto;
-    left: 0;
-}
-
-.service-card.active h3::after,
-.partnership-card.active h3::after {
-    transform: translateY(-50%) rotate(135deg); /* Rotates '+' to 'x' */
+.service-card.active .card-toggle::after,
+.partnership-card.active .card-toggle::after {
+    transform: rotate(135deg);
 }

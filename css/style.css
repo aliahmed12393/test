@@ -291,6 +291,57 @@ html[dir="rtl"] .nav-links a::after {
 .reveal-scale.animate { opacity: 1; transform: scale(1); }
 .reveal-scale { transform: scale(0.8); }
 
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        transition-delay: 0ms !important;
+    }
+
+    .hero h1,
+    .hero .subtitle,
+    .cta-buttons,
+    .floating-element,
+    .loading,
+    .cta-button,
+    .team-member::before {
+        animation: none !important;
+    }
+
+    .hero h1,
+    .hero .subtitle,
+    .cta-buttons,
+    .cta-button,
+    .floating-element,
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale,
+    .team-member,
+    .team-member::before {
+        transform: none !important;
+    }
+
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale,
+    .loading {
+        opacity: 1 !important;
+    }
+
+    .team-member::before {
+        opacity: 0 !important;
+    }
+}
+
 /* Services Section */
 .services {
     padding: 6rem 0;

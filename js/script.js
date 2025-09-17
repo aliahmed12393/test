@@ -1,4 +1,216 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let reduceMotion = motionMediaQuery.matches;
+
+    const counterTimers = new Map();
+    let ctaPulseTimer = null;
+    let heroAnimationFrameId = null;
+
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    const counters = document.querySelectorAll('.stat-number');
+    counters.forEach(counter => {
+        if (!counter.dataset.originalText) {
+            counter.dataset.originalText = counter.textContent;
+        }
+    });
+
+    const header = document.querySelector('.header');
+    const scrollProgressBar = document.querySelector('.scroll-progress');
+    const heroSection = document.querySelector('.hero');
+    const statsSection = document.querySelector('.stats');
+
+    let windowHalfX = window.innerWidth / 2;
+    let windowHalfY = window.innerHeight / 2;
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    let revealObserver;
+    let statsObserver;
+
+    function clearFloatingTransforms() {
+        document.querySelectorAll('.floating-element').forEach(element => {
+            element.style.transform = '';
+        });
+    }
+
+    function triggerCtaPulse() {
+        if (reduceMotion) {
+            return;
+        }
+
+        document.querySelectorAll('.cta-button:not(.secondary)').forEach(button => {
+            button.style.animation = 'pulse 0.7s ease-in-out';
+            setTimeout(() => {
+                button.style.animation = '';
+            }, 700);
+        });
+    }
+
+    function stopCtaPulse() {
+        if (ctaPulseTimer !== null) {
+            clearInterval(ctaPulseTimer);
+            ctaPulseTimer = null;
+        }
+
+        document.querySelectorAll('.cta-button:not(.secondary)').forEach(button => {
+            button.style.animation = '';
+        });
+    }
+
+    function startCtaPulse() {
+        if (reduceMotion || ctaPulseTimer !== null) {
+            return;
+        }
+
+        ctaPulseTimer = setInterval(() => {
+            if (!reduceMotion) {
+                triggerCtaPulse();
+            }
+        }, 8000);
+    }
+
+    function cancelCounterAnimations() {
+        counterTimers.forEach(timer => {
+            clearInterval(timer);
+        });
+        counterTimers.clear();
+
+        counters.forEach(counter => {
+            const originalText = counter.dataset.originalText || counter.textContent;
+            counter.textContent = originalText;
+        });
+    }
+
+    function animateCounters() {
+        counters.forEach(counter => {
+            const originalText = counter.dataset.originalText || counter.textContent;
+            counter.dataset.originalText = originalText;
+
+            if (reduceMotion) {
+                counter.textContent = originalText;
+                return;
+            }
+
+            const target = parseInt(originalText.replace(/[^\d]/g, ''), 10);
+            const suffix = originalText.replace(/[\d]/g, '');
+
+            if (isNaN(target)) {
+                counter.textContent = originalText;
+                return;
+            }
+
+            if (counterTimers.has(counter)) {
+                clearInterval(counterTimers.get(counter));
+            }
+
+            let current = 0;
+            const duration = 1500;
+            const increment = Math.max(1, Math.floor(target / (duration / 20)));
+
+            const timer = setInterval(() => {
+                if (reduceMotion) {
+                    counter.textContent = originalText;
+                    clearInterval(timer);
+                    counterTimers.delete(counter);
+                    return;
+                }
+
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                    counterTimers.delete(counter);
+                }
+                counter.textContent = Math.floor(current) + suffix;
+            }, 20);
+
+            counterTimers.set(counter, timer);
+        });
+    }
+
+    function updateHeroBackground() {
+        if (!heroSection) {
+            heroAnimationFrameId = null;
+            return;
+        }
+
+        targetX += (mouseX - targetX) * 0.05;
+        targetY += (mouseY - targetY) * 0.05;
+
+        const angleOffset = targetX * 5;
+        const colorStopOffset1 = targetY * 5;
+        const colorStopOffset2 = targetY * -5;
+
+        heroSection.style.background = `linear-gradient(${135 + angleOffset}deg, var(--primary-color) ${0 + colorStopOffset1}%, var(--secondary-color) ${100 + colorStopOffset2}%)`;
+
+        if (reduceMotion) {
+            heroAnimationFrameId = null;
+            return;
+        }
+
+        heroAnimationFrameId = requestAnimationFrame(updateHeroBackground);
+    }
+
+    function startHeroBackgroundAnimation() {
+        if (!heroSection || reduceMotion || heroAnimationFrameId !== null || !('IntersectionObserver' in window)) {
+            return;
+        }
+
+        heroAnimationFrameId = requestAnimationFrame(updateHeroBackground);
+    }
+
+    function stopHeroBackgroundAnimation() {
+        if (heroAnimationFrameId !== null) {
+            cancelAnimationFrame(heroAnimationFrameId);
+            heroAnimationFrameId = null;
+        }
+
+        if (heroSection) {
+            heroSection.style.background = 'linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)';
+        }
+    }
+
+    function applyMotionPreference() {
+        if (reduceMotion) {
+            stopHeroBackgroundAnimation();
+            stopCtaPulse();
+            cancelCounterAnimations();
+            clearFloatingTransforms();
+
+            if (revealObserver) {
+                revealObserver.disconnect();
+            }
+            revealElements.forEach(el => {
+                el.classList.add('animate');
+            });
+
+            if (statsObserver && statsSection) {
+                statsObserver.unobserve(statsSection);
+            }
+        } else {
+            if (revealObserver) {
+                revealElements.forEach(el => {
+                    el.classList.remove('animate');
+                    revealObserver.observe(el);
+                });
+            }
+
+            if (statsObserver && statsSection) {
+                statsObserver.observe(statsSection);
+            }
+
+            startHeroBackgroundAnimation();
+            startCtaPulse();
+        }
+    }
+
+    function handleMotionPreferenceChange(event) {
+        reduceMotion = event.matches;
+        applyMotionPreference();
+    }
+
     // Add loading class to body for potential fade-in effect
     document.body.classList.add('loading');
 
@@ -10,18 +222,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetElement = document.querySelector(targetId);
 
             if (targetElement) {
-                // Calculate position of target element
-                // Adjust for fixed header if necessary
-                const headerOffset = document.querySelector('.header') ? document.querySelector('.header').offsetHeight : 0;
+                const headerOffset = header ? header.offsetHeight : 0;
                 const elementPosition = targetElement.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
                 window.scrollTo({
                     top: offsetPosition,
-                    behavior: 'smooth'
+                    behavior: reduceMotion ? 'auto' : 'smooth'
                 });
 
-                // Close mobile menu if open and link is clicked
                 const navLinks = document.querySelector('.nav-links');
                 if (navLinks && navLinks.classList.contains('active')) {
                     navLinks.classList.remove('active');
@@ -37,56 +246,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Intersection Observer for reveal animations
     const observerOptions = {
-        threshold: 0.15, // Trigger when 15% of the element is visible
-        rootMargin: '0px 0px -50px 0px' // Adjust trigger point slightly
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
     };
 
-    const revealObserver = new IntersectionObserver((entries, observer) => {
+    revealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
+            if (reduceMotion) {
+                entry.target.classList.add('animate');
+                observer.unobserve(entry.target);
+                return;
+            }
+
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate');
-                // Optional: unobserve after animation to prevent re-triggering
-                // observer.unobserve(entry.target);
             } else {
-                // Optional: Remove animate class when element is out of view to re-trigger on scroll back
                 entry.target.classList.remove('animate');
             }
         });
     }, observerOptions);
 
-    // Observe all elements with reveal classes
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+    revealElements.forEach(el => {
         revealObserver.observe(el);
     });
 
     // Header scroll effect & Scroll Progress Bar
-    const header = document.querySelector('.header');
-    const scrollProgressBar = document.querySelector('.scroll-progress');
-
     window.addEventListener('scroll', () => {
-        // Header background change
         if (window.scrollY > 100) {
             if (header) header.classList.add('scrolled');
         } else {
             if (header) header.classList.remove('scrolled');
         }
 
-        // Scroll progress bar
         if (scrollProgressBar) {
             const scrollTotal = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (window.scrollY / scrollTotal) * 100;
             scrollProgressBar.style.width = Math.min(scrolled, 100) + '%';
         }
 
-        // Parallax for floating elements (subtle)
-        const scrolledY = window.pageYOffset;
-        document.querySelectorAll('.floating-element').forEach((element, index) => {
-            const speed = 0.1 + (index * 0.05); // Different speeds for depth
-            const yPos = -(scrolledY * speed);
-            element.style.transform = `translateY(${yPos}px) rotate(${scrolledY * 0.01 * (index % 2 === 0 ? 1 : -1)}deg)`;
-        });
+        if (!reduceMotion) {
+            const scrolledY = window.pageYOffset;
+            document.querySelectorAll('.floating-element').forEach((element, index) => {
+                const speed = 0.1 + (index * 0.05);
+                const yPos = -(scrolledY * speed);
+                element.style.transform = `translateY(${yPos}px) rotate(${scrolledY * 0.01 * (index % 2 === 0 ? 1 : -1)}deg)`;
+            });
+        } else {
+            clearFloatingTransforms();
+        }
     });
-
 
     // Stagger animation delays for cards/items
     function staggerAnimation(selector, delayIncrement) {
@@ -94,94 +302,45 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.transitionDelay = `${index * delayIncrement}s`;
         });
     }
-    staggerAnimation('.service-accordion-item', 0.1); // Updated for new accordion items
+    staggerAnimation('.service-accordion-item', 0.1);
     staggerAnimation('.team-member', 0.15);
     staggerAnimation('.contact-item', 0.1);
     staggerAnimation('.stat-item', 0.08);
 
-
     // Interactive hero background (subtle mouse move effect)
-    const heroSection = document.querySelector('.hero');
     if (heroSection) {
-        let mouseX = 0, mouseY = 0;
-        let targetX = 0, targetY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
-
         document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - windowHalfX) / windowHalfX; // Normalize to -1 to 1
-            mouseY = (e.clientY - windowHalfY) / windowHalfY; // Normalize to -1 to 1
+            mouseX = (e.clientX - windowHalfX) / windowHalfX;
+            mouseY = (e.clientY - windowHalfY) / windowHalfY;
         });
 
-        function updateHeroBackground() {
-            targetX += (mouseX - targetX) * 0.05; // Easing
-            targetY += (mouseY - targetY) * 0.05;
-
-            // Example: Adjust gradient angle or position slightly
-            const angleOffset = targetX * 5; // Max 5 degree shift
-            const colorStopOffset1 = targetY * 5; // Max 5% shift for first color
-            const colorStopOffset2 = targetY * -5; // Max 5% shift for second color
-
-            heroSection.style.background = `linear-gradient(${135 + angleOffset}deg, var(--primary-color) ${0 + colorStopOffset1}%, var(--secondary-color) ${100 + colorStopOffset2}%)`;
-
-            requestAnimationFrame(updateHeroBackground);
-        }
-        // Only start if IntersectionObserver is supported for performance
-        if ('IntersectionObserver' in window) {
-            requestAnimationFrame(updateHeroBackground);
-        }
+        window.addEventListener('resize', () => {
+            windowHalfX = window.innerWidth / 2;
+            windowHalfY = window.innerHeight / 2;
+        });
     }
-
 
     // Counter animation for stats
-    function animateCounters() {
-        const counters = document.querySelectorAll('.stat-number');
-        counters.forEach(counter => {
-            const targetText = counter.textContent;
-            const target = parseInt(targetText.replace(/[^\d]/g, '')); // Get number
-            const suffix = targetText.replace(/[\d]/g, ''); // Get suffix like '+' or '/7'
-            
-            if (isNaN(target)) return; // Skip if not a number
-
-            let current = 0;
-            const duration = 1500; // Animation duration in ms
-            const stepTime = Math.abs(Math.floor(duration / target)); // Calculate time per step
-            const increment = Math.max(1, Math.floor(target / (duration / 20))); // Increment value
-
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-                counter.textContent = Math.floor(current) + suffix;
-            }, 20); // Update every 20ms
-        });
-    }
-
-    // Trigger counter animation when stats section is visible
-    const statsSection = document.querySelector('.stats');
     if (statsSection) {
-        const statsObserver = new IntersectionObserver((entries, observer) => {
+        statsObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounters();
-                    observer.unobserve(entry.target); // Animate only once
+                if (!entry.isIntersecting) {
+                    return;
                 }
+
+                if (reduceMotion) {
+                    cancelCounterAnimations();
+                    observer.unobserve(entry.target);
+                    return;
+                }
+
+                animateCounters();
+                observer.unobserve(entry.target);
             });
-        }, { threshold: 0.5 }); // Trigger when 50% visible
+        }, { threshold: 0.5 });
+
         statsObserver.observe(statsSection);
     }
-
-    // Pulse animation for CTA buttons (subtle)
-    setInterval(() => {
-        document.querySelectorAll('.cta-button:not(.secondary)').forEach(button => {
-            button.style.animation = 'pulse 0.7s ease-in-out';
-            setTimeout(() => {
-                button.style.animation = ''; // Remove animation to allow re-trigger
-            }, 700);
-        });
-    }, 8000); // Every 8 seconds
 
     // Mobile menu toggle
     const mobileMenuButton = document.querySelector('.mobile-menu');
@@ -193,38 +352,34 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = mobileMenuButton.querySelector('i');
             if (icon) {
                 icon.classList.toggle('fa-bars');
-                icon.classList.toggle('fa-times'); // Change to 'X' icon
+                icon.classList.toggle('fa-times');
             }
         });
     }
 
     // Email deobfuscation for mailto link
     const emailLink = document.querySelector('a.email-link');
-    if (emailLink && emailLink.textContent.includes('[email protected]')) { // Basic check
-        const actualEmail = "asus.thiqa" + "@" + "gmail.com"; // Updated to correct email
+    if (emailLink && emailLink.textContent.includes('[email protected]')) {
+        const actualEmail = "asus.thiqa" + "@" + "gmail.com";
         emailLink.href = "mailto:" + actualEmail;
         emailLink.textContent = actualEmail;
     }
 
-
     // Interactive Service Cards in Grid Layout (Now for both sections)
     document.querySelectorAll('.service-card, .partnership-card').forEach(card => {
         card.addEventListener('click', (event) => {
-            // Prevent click on a link inside the card from triggering the collapse
             if (event.target.tagName === 'A') {
                 return;
             }
 
             const wasActive = card.classList.contains('active');
 
-            // Close all other cards in both sections
             document.querySelectorAll('.service-card, .partnership-card').forEach(otherCard => {
                 if (otherCard !== card) {
                     otherCard.classList.remove('active');
                 }
             });
 
-            // Toggle the active state of the clicked card
             if (wasActive) {
                 card.classList.remove('active');
             } else {
@@ -233,4 +388,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    if (typeof motionMediaQuery.addEventListener === 'function') {
+        motionMediaQuery.addEventListener('change', handleMotionPreferenceChange);
+    } else if (typeof motionMediaQuery.addListener === 'function') {
+        motionMediaQuery.addListener(handleMotionPreferenceChange);
+    }
+
+    applyMotionPreference();
 });

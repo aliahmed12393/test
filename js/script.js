@@ -207,30 +207,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // Interactive Service Cards in Grid Layout (Now for both sections)
-    document.querySelectorAll('.service-card, .partnership-card').forEach(card => {
-        card.addEventListener('click', (event) => {
-            // Prevent click on a link inside the card from triggering the collapse
-            if (event.target.tagName === 'A') {
+    // Interactive Service and Partnership Cards with accessible toggles
+    const interactiveCards = Array.from(document.querySelectorAll('.service-card, .partnership-card'));
+    const toggleButtons = Array.from(document.querySelectorAll('.card-toggle'));
+
+    const setCardState = (card, expand) => {
+        if (!card) return;
+        const toggle = card.querySelector('.card-toggle');
+        const controlsId = toggle ? toggle.getAttribute('aria-controls') : null;
+
+        if (expand) {
+            card.classList.add('active');
+        } else {
+            card.classList.remove('active');
+        }
+
+        if (toggle) {
+            toggle.setAttribute('aria-expanded', expand ? 'true' : 'false');
+        }
+
+        if (controlsId) {
+            const panel = document.getElementById(controlsId);
+            if (panel) {
+                panel.setAttribute('aria-hidden', expand ? 'false' : 'true');
+            }
+        }
+    };
+
+    const toggleCard = (toggle) => {
+        const card = toggle.closest('.service-card, .partnership-card');
+        if (!card) return;
+
+        const shouldExpand = !card.classList.contains('active');
+
+        interactiveCards.forEach(otherCard => {
+            if (otherCard !== card) {
+                setCardState(otherCard, false);
+            }
+        });
+
+        setCardState(card, shouldExpand);
+    };
+
+    toggleButtons.forEach(toggle => {
+        toggle.setAttribute('aria-expanded', toggle.getAttribute('aria-expanded') || 'false');
+
+        toggle.addEventListener('click', (event) => {
+            if (event.detail === 0) {
+                // Keyboard-initiated click is handled in keydown
                 return;
             }
 
-            const wasActive = card.classList.contains('active');
+            event.preventDefault();
+            toggleCard(toggle);
+        });
 
-            // Close all other cards in both sections
-            document.querySelectorAll('.service-card, .partnership-card').forEach(otherCard => {
-                if (otherCard !== card) {
-                    otherCard.classList.remove('active');
-                }
-            });
-
-            // Toggle the active state of the clicked card
-            if (wasActive) {
-                card.classList.remove('active');
-            } else {
-                card.classList.add('active');
+        toggle.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleCard(toggle);
             }
         });
+    });
+
+    interactiveCards.forEach(card => {
+        setCardState(card, card.classList.contains('active'));
     });
 
 });

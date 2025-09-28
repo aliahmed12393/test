@@ -70,6 +70,8 @@ body {
     color: var(--text-dark); /* Uses updated text color */
     text-decoration: none;
     transition: all 0.3s ease;
+    white-space: nowrap; /* Prevent wrapping to keep header height consistent */
+    margin-inline-end: 1.5rem; /* Ensure visual gap before nav links */
 }
 
 .logo-link:hover {
@@ -89,6 +91,7 @@ body {
     transition: all 0.3s ease;
     position: relative;
     padding: 0.5rem 0;
+    white-space: nowrap; /* Keep labels like "About Us" on one line */
 }
 
 .nav-links a::after {
@@ -1255,4 +1258,7 @@ html[dir="rtl"] .partnership-card h3::after {
 .service-card.active h3::after,
 .partnership-card.active h3::after {
     transform: translateY(-50%) rotate(135deg); /* Rotates '+' to 'x' */
+}
+@media (max-width: 768px) {
+    .nav-links a { white-space: normal; }
 }
